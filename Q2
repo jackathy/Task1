@@ -1,0 +1,43 @@
+use test2
+CREATE TABLE table_2 (
+    id INT NOT NULL,
+    `year` INT NOT NULL,
+    `month` INT NOT NULL,
+    `hour` INT NOT NULL,
+    pm2 INT NOT NULL,
+    DEWP INT NOT NULL,
+    TEMP INT NOT NULL,
+    PRES INT NOT NULL,
+    cwbd VARCHAR(2) NOT NULL,
+    Iws INT NOT NULL,
+    `Is` INT NOT NULL,
+    Ir INT NOT NULL,
+    ) ENGINE=INNODB;
+	
+LOAD DATA LOCAL INFILE 'data2.csv' INTO TABLE table_2 FIELDS TERMINATED BY ',' ENCLOSED BY '"' IGNORE 1 ROWS;
+
+
+/*Q1*/
+ALTER TABLE table_2 ADD stdpm FLOAT NOT NULL;
+ALTER TABLE table_2 ADD meanpm FLOAT NOT NULL;
+ALTER TABLE table_2 ADD threepm FLOAT NOT NULL;
+UPDATE table_2 SET stdpm = (SELECT STDDEV(pm2) 
+     FROM table_2 
+     WHERE id < a.id
+     AND id >= a.id - 3
+	 AND pm2 IS NOT NULL
+     ) FROM table_2 a;
+
+UPDATE table_2 SET meanpm = (SELECT AVG(pm2) 
+     FROM table_2 
+     WHERE id < a.id
+     AND id >= a.id - 3
+	 AND pm2 IS NOT NULL
+     ) FROM table_2 a;
+UPDATE table_2 SET threepm = meanpm + 3 * stdpm WHERE pm2 IS NOT NULL;
+SELECT * FROM table_2 WHERE pm2 > threepm AND pm2 IS NOT NULL ;
+
+/*Q2*/
+ALTER TABLE table_2 ADD pmrank INTEGER NOT NULL;
+UPDATE table_2 SET pmrank = (rank() OVER (ORDER BY id) rank FROM test WHERE pm2 > threepm AND pm2 IS NOT NULL)
+SELECT id,pmrank FROM table_2 WHERE pmrank BETWEEN 10 AND 20;
