@@ -13,12 +13,18 @@ mysql> SELECT MAX(ts) FROM table_3;
 
 
 def daily_user_count(cur, start=1, end=31):
+    record = pd.DataFrame(columns=['date', 'user number'])
+    i = 0
     for d in range(start, end+1):
         day = str(d).zfill(2)
+        # cur.execute("SELECT * FROM table_3 WHERE ts  = %s", ("2020-01-{}".format(day)))
         cur.execute("SELECT COUNT(DISTINCT id) FROM table_3 WHERE ts  = %s", ("2020-01-{}".format(day)))
         results = cur.fetchall()
         print("2020-01-{} user number:".format(day), results[0]['COUNT(DISTINCT id)'])
+        record.loc[i] = [day, results[0]['COUNT(DISTINCT id)']]
+        i += 1
         gc.collect()
+    record.to_csv('record_q2.csv')
 
 
 def main():
