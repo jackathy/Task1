@@ -1,0 +1,53 @@
+SELECT COUNT(DISTINCT id) FROM table_3;
+/* total distinct id number is 99999 */
+SET GLOBAL innodb_buffer_pool_size=67108864;
+
+SELECT ROUND(t1.ratio/t2.totalcount) FROM (
+  SELECT COUNT(DISTINCT id) AS ratio FROM (
+    SELECT id, count(*) num_count FROM(
+      SELECT ts, id, DENSE_RANK() over (ORDER BY ts)-DENSE_RANK() over (PARTITION BY id ORDER BY ts) AS sub_order FROM table_3
+    ) as m GROUP BY id, sub_order
+  )as s where num_count >= 2
+) t1,
+(SELECT COUNT(DISTINCT id) AS totalcount FROM table_3
+) t2;
+
+SELECT ROUND(t1.ratio/t2.totalcount) FROM (
+  SELECT COUNT(DISTINCT id) AS ratio FROM (
+    SELECT id, count(*) num_count FROM(
+      SELECT ts, id, DENSE_RANK() over (ORDER BY ts)-DENSE_RANK() over (PARTITION BY id ORDER BY ts) AS sub_order FROM table_3
+    ) as m GROUP BY id, sub_order
+  )as s where num_count >= 5
+) t1,
+(SELECT COUNT(DISTINCT id) AS totalcount FROM table_3
+) t2;
+
+SELECT ROUND(t1.ratio/t2.totalcount) FROM (
+  SELECT COUNT(DISTINCT id) AS ratio FROM (
+    SELECT id, count(*) num_count FROM(
+      SELECT ts, id, DENSE_RANK() over (ORDER BY ts)-DENSE_RANK() over (PARTITION BY id ORDER BY ts) AS sub_order FROM table_3
+    ) as m GROUP BY id, sub_order
+  )as s where num_count >= 7
+) t1,
+(SELECT COUNT(DISTINCT id) AS totalcount FROM table_3
+) t2;
+
+SELECT ROUND(t1.ratio/t2.totalcount) FROM (
+  SELECT COUNT(DISTINCT id) AS ratio FROM (
+    SELECT id, count(*) num_count FROM(
+      SELECT ts, id, DENSE_RANK() over (ORDER BY ts)-DENSE_RANK() over (PARTITION BY id ORDER BY ts) AS sub_order FROM table_3
+    ) as m GROUP BY id, sub_order
+  )as s where num_count >= 14
+) t1,
+(SELECT COUNT(DISTINCT id) AS totalcount FROM table_3
+) t2;
+
+SELECT ROUND(t1.ratio/t2.totalcount) FROM (
+  SELECT COUNT(DISTINCT id) AS ratio FROM (
+    SELECT id, count(*) num_count FROM(
+      SELECT ts, id, DENSE_RANK() over (ORDER BY ts)-DENSE_RANK() over (PARTITION BY id ORDER BY ts) AS sub_order FROM table_3
+    ) as m GROUP BY id, sub_order
+  )as s where num_count >= 30
+) t1,
+(SELECT COUNT(DISTINCT id) AS totalcount FROM table_3
+) t2;
