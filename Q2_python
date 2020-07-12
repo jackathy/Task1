@@ -1,0 +1,19 @@
+import pandas as pd
+
+'''
+由於電腦上的MySQL出現問題，本題附上以Python作答的code
+'''
+
+df = pd.read_csv('data2.csv')
+##################
+#(1)
+##################
+df['three_mean'] = df['pm2.5'].rolling(window=3).sum().shift()
+df['threedev'] = df['pm2.5'].rolling(window=3).std().shift()
+df['anomaly'] = df.apply(lambda x: 1 if x['pm2.5'] > x['three_mean']+3*x['threedev'] else 0, axis=1)
+select_df = df[df['anomaly'] == 1]
+select_df = select_df.sort_values(by='No').reset_index(drop=True)
+
+#(2)
+print(select_df.iloc[10:21,:])
+select_df.iloc[10:21,:].to_csv('Q2.csv', index=None)
