@@ -1,0 +1,43 @@
+import pymysql
+import sys
+import pandas as pd
+import gc
+##################################################
+
+'''
+This is Python Code.
+We already know the range of ts by finding the range of ts in MySQL
+mysql> SELECT MIN(ts) FROM table_3;
+mysql> SELECT MAX(ts) FROM table_3;
+'''
+
+
+def daily_user_count(cur, start=1, end=31):
+    for d in range(start, end+1):
+        day = str(d).zfill(2)
+        cur.execute("SELECT COUNT(DISTINCT id) FROM table_3 WHERE ts  = %s", ("2020-01-{}".format(day)))
+        results = cur.fetchall()
+        print("2020-01-{} user number:".format(day), results[0]['COUNT(DISTINCT id)'])
+        gc.collect()
+
+
+def main():
+    db_settings = {
+        "host": "127.0.0.1",
+        "port": 3306,
+        "user": "root",
+        "password": "password",
+        "db": "test1",
+        "charset": "utf8"
+    }
+    try:
+        conn = pymysql.connect(**db_settings)
+    except Exception as ex:
+        print(ex)
+    cur = conn.cursor(cursor=pymysql.cursors.DictCursor)
+    daily_user_count(cur, start=1, end=31)
+    conn.close()
+
+
+if __name__ == '__main__':
+    main()
