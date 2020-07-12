@@ -1,0 +1,20 @@
+/* MySQL code */
+mysql -u root -p --local_infile=1
+use test1
+CREATE TABLE table_3 (
+    -> id INT NOT NULL,
+    -> ts DATE NOT NULL
+    -> ) ENGINE=INNODB;
+
+LOAD DATA LOCAL INFILE 'data1.csv' INTO TABLE table_3 FIELDS TERMINATED BY ',' ENCLOSED BY '"' IGNORE 1 ROWS;
+
+explain test1.table_3;
+/*
++-------+------+------+-----+---------+-------+
+| Field | Type | Null | Key | Default | Extra |
++-------+------+------+-----+---------+-------+
+| id    | int  | NO   |     | NULL    |       |
+| ts    | date | NO   |     | NULL    |       |
++-------+------+------+-----+---------+-------+
+2 rows in set (0.40 sec)
+*/
